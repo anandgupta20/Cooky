@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooky/ui_elements/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:cooky/Services/getRecipees.dart';
@@ -47,7 +48,7 @@ class ListViewCards extends StatelessWidget {
       child: Card(
         child: InkWell(
           splashColor: Colors.blue.withAlpha(30),
-          onTap: () => {},
+         onTap: ()=>_openDetailPage(context, snapshot.data.documents[index]),
           child: Container(
             width: 300,
             height: 220,
@@ -97,6 +98,12 @@ class ListViewCards extends StatelessWidget {
           ),
         ),
       ),
+    )
+    );
+  }
+  _openDetailPage(BuildContext context, DocumentSnapshot document) {
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) => Detail(document)
     ));
   }
 }
