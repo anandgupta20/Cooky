@@ -29,5 +29,14 @@ class GetRecipesService {
         .snapshots();
   }
 
+  favCountincrement( int count, DocumentSnapshot snapshot){
+
+    count++;
+    snapshot.reference.updateData({"favouriteCount":count});
+
+        
+
+  }
+
   
 }

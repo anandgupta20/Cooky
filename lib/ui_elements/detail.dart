@@ -1,9 +1,35 @@
+import 'package:cooky/Services/getRecipees.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Detail extends StatelessWidget {
-   DocumentSnapshot document;
+
+
+
+class Detail extends StatefulWidget {
+   final DocumentSnapshot document;
   Detail(this.document);
+  
+
+  @override
+  State<StatefulWidget> createState(){
+
+    return _DetailPageState();
+  }
+  }
+
+   class _DetailPageState extends State<Detail>{
+     
+       bool _isFavouriteclick=false;
+       DocumentSnapshot document;
+       int favouriteCount;
+      @override
+  void initState() {
+    // TODO: implement initState
+     document=widget.document;
+     favouriteCount=document['favouriteCount'];
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context){
@@ -41,9 +67,18 @@ class Detail extends StatelessWidget {
                       Divider(),
                       SizedBox(height: 10.0,),
                       Row(children: <Widget>[
-                        Icon(Icons.favorite_border),
-                        SizedBox(width: 5.0,),
-                        Text(document['favouriteCount'].toString()),
+                        IconButton(
+                         onPressed:(){
+                                  if(_isFavouriteclick){
+                           GetRecipesService().favCountincrement(document['favouriteCount'],document);
+                            setState(() {
+                               favouriteCount=document['favouriteCount']+1;
+                               _isFavouriteclick=false;
+                            });}} ,
+                         
+                         icon: Icon(Icons.favorite_border,),
+                        ),
+                        Text(favouriteCount.toString()),
                         SizedBox(width: 16.0,),
                         Icon(Icons.comment),
                         SizedBox(width: 5.0,),

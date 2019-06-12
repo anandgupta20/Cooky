@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooky/Services/getRecipees.dart';
 import 'package:cooky/ui_elements/detail.dart';
+import 'package:cooky/ui_elements/listViewCards.dart';
 
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,7 @@ class HomeTab extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        _buildListHeader( _category[carouselIndex], "SEE ALL"),
+        _buildListHeader( _category[carouselIndex], "SEE ALL", context),
         SizedBox(
           height: 25.0,
         ),
@@ -140,7 +141,7 @@ class HomeTab extends StatelessWidget {
     
   }
 
-  Widget _buildListHeader(String left, String right) {
+  Widget _buildListHeader(String left, String right, BuildContext context) {
     return Container(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -160,7 +161,7 @@ class HomeTab extends StatelessWidget {
           margin: EdgeInsets.only(right: 10.0, top: 5.0),
           padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
           child: InkWell(
-            onTap: () {},
+            onTap: ()=> _openListViewCardPage(context, left),
             child: Text(
               right,
               style: TextStyle(
@@ -188,6 +189,13 @@ class HomeTab extends StatelessWidget {
         }
 
    }
+
+     _openListViewCardPage(BuildContext context, String category) {
+    Navigator.push( context, MaterialPageRoute(
+      builder: (context) => ListViewCards(category)
+    ));
+        
+          }
 
 
    _openDetailPage(BuildContext context, DocumentSnapshot document) {

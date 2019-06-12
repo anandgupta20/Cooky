@@ -14,7 +14,7 @@ class ListViewCards extends StatelessWidget {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text("Vegetarian"),
+        title: Text(category),
         backgroundColor: Colors.pinkAccent[200],
       ),
       body: listCards(context),
@@ -24,7 +24,7 @@ class ListViewCards extends StatelessWidget {
   Widget listCards(BuildContext context) {
     return Container(
         child: StreamBuilder<QuerySnapshot>(
-      stream: GetRecipesService().getByCategory(category),
+      stream: _getCategory(category),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Text('Loading Data, please wait');
@@ -106,5 +106,19 @@ class ListViewCards extends StatelessWidget {
       builder: (context) => Detail(document)
     ));
   }
+
+  _getCategory(String category){
+        switch(category){
+             
+             case "New Arrivals" : return GetRecipesService().getLatest();
+                      break;
+             case "Most Popular":  return  GetRecipesService().getfavourite();
+                      break;
+
+             default: return GetRecipesService().getByCategory(category);
+
+
+        }
 }
 //
+}
