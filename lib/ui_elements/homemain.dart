@@ -5,6 +5,7 @@ import 'package:cooky/ui_elements/categorytab.dart';
 import 'package:cooky/ui_elements/hometab.dart';
 import 'package:cooky/ui_elements/positiontab.dart';
 import 'package:cooky/ui_elements/sharetab.dart';
+import 'drawer/home_drawer.dart';
 
 import 'package:flutter/material.dart';
 
@@ -58,6 +59,7 @@ class HomePageState extends State<HomePage> {
       
       body: _buildAppBar(), 
       bottomNavigationBar: _buildBottomNavigationBar(),
+      drawer: HomeDrawer(),
     );
   }
 
