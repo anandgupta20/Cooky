@@ -1,9 +1,11 @@
 import 'package:cooky/Services/getRecipees.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:share/share.dart';
 
 
 
+ 
 
 class Detail extends StatefulWidget {
    final DocumentSnapshot document;
@@ -19,7 +21,7 @@ class Detail extends StatefulWidget {
 
    class _DetailPageState extends State<Detail>{
      
-       bool _isFavouriteclick=false;
+      bool _isFavouriteclick=true;
        DocumentSnapshot document;
        int favouriteCount;
       @override
@@ -39,7 +41,13 @@ class Detail extends StatefulWidget {
         backgroundColor: Colors.pinkAccent[200],
         title: Text('Article Two',style: TextStyle(color: Colors.white)),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.share), onPressed: (){},)
+          IconButton(icon: Icon(Icons.share), onPressed: (){
+            final RenderBox box = context.findRenderObject();
+                              Share.share("Want to share",
+                                  sharePositionOrigin:
+                                      box.localToGlobal(Offset.zero) &
+                                          box.size);
+          },)
         ],
       ),
       body: SingleChildScrollView(
