@@ -60,6 +60,7 @@ class HomePageState extends State<HomePage> {
       body: _buildAppBar(), 
       bottomNavigationBar: _buildBottomNavigationBar(),
       drawer: HomeDrawer(),
+     
     );
   }
 
@@ -69,9 +70,15 @@ class HomePageState extends State<HomePage> {
           return <Widget>[
             SliverAppBar(
               backgroundColor: Colors.white,
+              iconTheme: new IconThemeData(color: Colors.pinkAccent[200]),
+              //backgroundColor: Colors.white,
+              
               //expandedHeight: 0.0,
+             actions: <Widget>[
+               
+             ],
               floating: true,
-              pinned: true,
+              pinned: false,
               snap: true,
               centerTitle:true, 
               title:Text(_appBarTitle[_currentIndex], style: TextStyle(color: Colors.black),),
