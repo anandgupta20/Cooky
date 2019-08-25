@@ -1,4 +1,5 @@
 import 'package:cooky/Services/getRecipees.dart';
+import 'package:cooky/models/recipe.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:share/share.dart';
@@ -8,8 +9,8 @@ import 'package:share/share.dart';
  
 
 class Detail extends StatefulWidget {
-   final DocumentSnapshot document;
-  Detail(this.document);
+  final  Recipe recipe;
+  Detail(this.recipe);
   
 
   @override
@@ -22,13 +23,13 @@ class Detail extends StatefulWidget {
    class _DetailPageState extends State<Detail>{
      
       bool _isFavouriteclick=true;
-       DocumentSnapshot document;
-       int favouriteCount;
+      Recipe recipe;
+       String favouriteCount;
       @override
   void initState() {
     // TODO: implement initState
-     document=widget.document;
-     favouriteCount=document['favouriteCount'];
+     recipe=widget.recipe;
+     favouriteCount=recipe.favouriteCount;
     super.initState();
   }
 
@@ -38,7 +39,7 @@ class Detail extends StatefulWidget {
     String image = "assets/img/2.jpg";
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.pinkAccent[200],
+        backgroundColor: Colors.redAccent,
         title: Text('Article Two',style: TextStyle(color: Colors.white)),
         actions: <Widget>[
           IconButton(icon: Icon(Icons.share), onPressed: (){
@@ -68,21 +69,21 @@ class Detail extends StatefulWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                      Text(document['title'], style: Theme.of(context).textTheme.title,),
+                      Text(recipe.title, style: Theme.of(context).textTheme.title,),
                       SizedBox(height: 10.0),
-                      Text("${document['timeStamp']} ${document['author']}"),
+                     // Text("${document['timeStamp']} ${document['author']}"),
                       SizedBox(height: 10.0),
                       Divider(),
                       SizedBox(height: 10.0,),
                       Row(children: <Widget>[
                         IconButton(
-                         onPressed:(){
-                                  if(_isFavouriteclick){
-                           GetRecipesService().favCountincrement(document['favouriteCount'],document);
-                            setState(() {
-                               favouriteCount=document['favouriteCount']+1;
-                               _isFavouriteclick=false;
-                            });}} ,
+                        //  onPressed:(){
+                        //           if(_isFavouriteclick){
+                        //    GetRecipesService().favCountincrement(recipe.favouriteCount,recipe);
+                        //     setState(() {
+                        //        favouriteCount=recipe.favouriteCount+1;
+                        //        _isFavouriteclick=false;
+                        //     });}} ,
                          
                          icon: Icon(Icons.favorite_border,),
                         ),
@@ -93,9 +94,9 @@ class Detail extends StatefulWidget {
                         Text("2.2k"),
                       ],),
                       SizedBox(height: 10.0,),
-                      Text(document['description'], textAlign: TextAlign.justify,),
+                      Text(recipe.description, textAlign: TextAlign.justify,),
                       SizedBox(height: 10.0),
-                      Text(document['description'], textAlign: TextAlign.justify,)
+                      Text(recipe.description, textAlign: TextAlign.justify,)
                   ],
                 ),
               ),

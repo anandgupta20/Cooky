@@ -71,12 +71,15 @@ class CategoryTab extends StatelessWidget {
               Icons.arrow_forward_ios,
               color: Colors.pinkAccent[100],
             ),
-            onPressed: () =>
-                _openListViewCardPage(context, _categoryList[index])));
+            onPressed: ()=>{}
+
+        ));
+            // onPressed: () =>
+            //     _openListViewCardPage(context, _categoryList[index])));
   }
 
-  _openListViewCardPage(BuildContext context, String category) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => ListViewCards(category)));
-  }
+  // _openListViewCardPage(BuildContext context, String category) {
+  //   Navigator.push(context,
+  //       MaterialPageRoute(builder: (context) => ListViewCards(category)));
+  // }
 }
