@@ -1,4 +1,4 @@
-import 'package:cooky/ui_elements/detail.dart';
+import 'package:flutter/material.dart';
 import 'package:cooky/ui_elements/detailscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -6,24 +6,18 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cooky/scoped_models/mainmodel.dart';
 import 'package:cooky/models/recipe.dart';
 
-class ListViewCards extends StatelessWidget {
-  final String category;
 
-  ListViewCards(this.category);
 
+class DisplayfavouriteTab extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(category),
-        backgroundColor: Colors.redAccent,
-      ),
-      body: listCards(context),
-    );
+    return listCards(context);
   }
+}
 
-  Widget listCards(BuildContext context) {
+
+ Widget listCards(BuildContext context) {
     return Container(child: ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
         return model.isLoading
@@ -32,17 +26,16 @@ class ListViewCards extends StatelessWidget {
               )
             : ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: 4,
+                itemCount: model.displayRecipe.length,
                 itemBuilder: (BuildContext context, int index) {
                   return makeCard(
-                      context, _getCategory(category, model), index);
+                      context, model.displayRecipe,model.displayRecipe.length- index-1);
                 },
               );
       },
     ));
   }
-
-  Widget makeCard(BuildContext context, List<Recipe> recipe, int index) {
+Widget makeCard(BuildContext context, List<Recipe> recipe, int index) {
     return Center(
         child: Container(
       margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -106,17 +99,3 @@ class ListViewCards extends StatelessWidget {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => DetailScreen(recipe)));
   }
-
-  _getCategory(String category, MainModel model) {
-    switch (category) {
-      case "New Arrivals":
-        return model.allRecipe;
-        break;
-      case "Most Popular":
-        return model.mostPopularecipeList;
-        break;
-      default:
-       return model.recipeListbyCategory;
-    }
-  }
-}
