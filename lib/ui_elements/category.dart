@@ -1,57 +1,45 @@
 import 'package:cooky/scoped_models/mainmodel.dart';
 import 'package:cooky/ui_elements/listViewCards.dart';
+import 'package:cooky/widget/NoNetworkWidget.dart';
+import 'package:cooky/widget/categoryitems.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class Category extends StatelessWidget {
-  GestureDetector items(String itemname, BuildContext context ) {
+
+class Category extends StatefulWidget {
+   final MainModel _model;
+   Category(this._model);
+ CategoryState createState() => new CategoryState();
+}
+
+
+class CategoryState extends State<Category>{
+ 
+
+    @override
+  void initState() {
+     super.initState();
+    //widget._model.checkConnection();
+   
+  }
+          
+    GestureDetector items(String itemname, BuildContext context,MainModel model) {
     return GestureDetector(
-  onTap: () {
-    _openListViewCardPage( context, "Vegetarian");
-  },
-  child: Material(
-      color: Colors.grey[50],
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(12.0),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(bottom: 4),
-                  child: Icon(
-                    Icons.category,
-                    color: Colors.redAccent,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 15, bottom: 1),
-                  child: Text(itemname,
-                      style: TextStyle(color: Colors.black, fontSize: 15.0)),
-                )
-              ],
-            )
-          ],
-        ),
-      ),
-    ),
-);
-    
-    
+      onTap: () {
+        _openListViewCardPage(context,"Vegetarian",model);
+      },
+      child: Categoryitem(itemname),
+    );
   }
 
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(child: ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
-        return model.isLoading
+        return model.get_isLoading
             ? Center(
                 child: CircularProgressIndicator(),
-              )
+              ):!model.get_isConnected?NoNetwork(model)
             : ListView(children: <Widget>[
                 Container(
                   child: Column(
@@ -65,7 +53,7 @@ class Category extends StatelessWidget {
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      staggered(context),
+                      staggered(context,model),
                       Divider(
                         height: 1,
                       ),
@@ -77,7 +65,7 @@ class Category extends StatelessWidget {
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      staggered(context),
+                      staggered(context,model),
                     ],
                   ),
                 )
@@ -86,7 +74,7 @@ class Category extends StatelessWidget {
     ));
   }
 
-  Widget staggered(BuildContext context) {
+  Widget staggered(BuildContext context,MainModel model) {
     return StaggeredGridView.count(
       physics: ScrollPhysics(),
       shrinkWrap: true,
@@ -95,12 +83,12 @@ class Category extends StatelessWidget {
       mainAxisSpacing: 8,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       children: <Widget>[
-        items("Starter", context),
-        items("Vegan",context),
-        items("Breakfast", context),
-        items("Juices", context),
-        items("Dessert", context),
-        items("Snack", context),
+        items("Starter", context,model),
+        items("Vegan", context,model),
+        items("Breakfast", context,model),
+        items("Juices", context,model),
+        items("Dessert", context,model),
+        items("Snack", context,model),
       ],
       staggeredTiles: [
         StaggeredTile.extent(1, 100),
@@ -112,10 +100,9 @@ class Category extends StatelessWidget {
       ],
     );
   }
-  
-    _openListViewCardPage(BuildContext context, String category) {
-   Navigator.push(context,
-       MaterialPageRoute(builder: (context) => ListViewCards(category)));
-   }
 
+  _openListViewCardPage(BuildContext context, String category,MainModel model) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ListViewCards(category,model)));
+  }
 }

@@ -3,10 +3,10 @@ import 'package:flutter/widgets.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cooky/scoped_models/mainmodel.dart';
 import 'package:cooky/models/auth.dart';
+import 'package:toast/toast.dart';
 
-
- final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
- final TextEditingController _passwordTextController = TextEditingController();
+final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+final TextEditingController _passwordTextController = TextEditingController();
 
 class LoginScreen3 extends StatefulWidget {
   @override
@@ -19,8 +19,6 @@ class _LoginScreen3State extends State<LoginScreen3>
     'email': null,
     'password': null,
   };
- 
-  
 
   AuthMode authMode = AuthMode.Login;
 
@@ -29,11 +27,17 @@ class _LoginScreen3State extends State<LoginScreen3>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   PageController _controller =
       new PageController(initialPage: 1, viewportFraction: 1.0);
 
   @override
   Widget build(BuildContext context) {
+     
     return Scaffold(
       body: ListView(
         children: <Widget>[
@@ -60,8 +64,6 @@ class _LoginScreen3State extends State<LoginScreen3>
           prefixIcon: Icon(Icons.email),
           labelText: "Email",
           border: OutlineInputBorder()),
-      // decoration: InputDecoration(
-      //     labelText: 'E-Mail', filled: true, fillColor: Colors.white),
       keyboardType: TextInputType.emailAddress,
       validator: (String value) {
         if (value.isEmpty ||
@@ -69,7 +71,7 @@ class _LoginScreen3State extends State<LoginScreen3>
                 .hasMatch(value)) {
           return 'Please enter a valid email';
         }
-          return null;
+        return null;
       },
       onSaved: (String value) {
         _formData['email'] = value;
@@ -83,8 +85,6 @@ class _LoginScreen3State extends State<LoginScreen3>
           prefixIcon: Icon(Icons.lock),
           labelText: "Password",
           border: OutlineInputBorder()),
-      // decoration: InputDecoration(
-      //     labelText: 'Password', filled: true, fillColor: Colors.white),
       obscureText: true,
       controller: _passwordTextController,
       validator: (String value) {
@@ -115,8 +115,9 @@ class _LoginScreen3State extends State<LoginScreen3>
     );
   }
 
-  void _submitForm(Function authenticate) async {
+  void _submitForm(Function authenticate, BuildContext context) async {
     if (!_formKey.currentState.validate()) {
+      Navigator.of(context).pop();
       return;
     }
     _formKey.currentState.save();
@@ -124,8 +125,18 @@ class _LoginScreen3State extends State<LoginScreen3>
     successInformation =
         await authenticate(_formData['email'], _formData['password'], authMode);
     if (successInformation['success']) {
-      Navigator.pushReplacementNamed(context, '/home');
+      if (authMode==AuthMode.Signup)
+      {
+        Toast.show(
+                            " Signing Up Successfull !!! ",
+                            context,
+                            duration: Toast.LENGTH_LONG,
+                            gravity: Toast.BOTTOM);
+      }
+      Navigator.pushNamedAndRemoveUntil(context,'/home', (route) => false);
+     // Navigator.pushReplacementNamed(context, '/home');
     } else {
+      Navigator.of(context).pop();
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -147,16 +158,12 @@ class _LoginScreen3State extends State<LoginScreen3>
   }
 
   Widget signupPage(BuildContext context) {
+    double height=MediaQuery.of(context).size.height;
+     double width=MediaQuery.of(context).size.width;
     return new Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         color: Colors.white,
-        image: DecorationImage(
-          colorFilter: new ColorFilter.mode(
-              Colors.black.withOpacity(0.05), BlendMode.dstATop),
-          image: AssetImage('assets/images/mountains.jpg'),
-          fit: BoxFit.cover,
-        ),
       ),
       child: Form(
         key: _formKey,
@@ -166,11 +173,7 @@ class _LoginScreen3State extends State<LoginScreen3>
               padding: EdgeInsets.only(
                   left: 100.0, right: 100.0, top: 60, bottom: 50),
               child: Center(
-                child: Icon(
-                  Icons.headset_mic,
-                  color: Colors.redAccent,
-                  size: 50.0,
-                ),
+                 child: Image.asset("assets/halflogo.png",height: 90,),
               ),
             ),
             Container(
@@ -188,62 +191,45 @@ class _LoginScreen3State extends State<LoginScreen3>
                   ),
                   _buildPasswordConfirmTextField(),
                   SizedBox(
-                    height: 10,
+                    height: 50,
                   ),
                 ],
               ),
             ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: new FlatButton(
-                    child: new Text(
-                      "Already have an account ?",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.redAccent,
-                        fontSize: 15.0,
-                      ),
-                      textAlign: TextAlign.end,
-                    ),
-                    onPressed: () => {},
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15.0,
-            ),
             ScopedModelDescendant<MainModel>(
                 builder: (BuildContext context, Widget child, MainModel model) {
-              return model.isLoading
-                 ? Center(child: CircularProgressIndicator())
-                   : Container(
-                      // padding: EdgeInsets.all(30),
-                      child: Material(
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: Colors.redAccent,
-                        child: MaterialButton(
-                          height: 50,
-                          minWidth: 300,
-                          onPressed: () => {
-                                changeAuthModeSign(),
-                                print(authMode),
-                                _submitForm(model.authenticate)
-                              },
-                          child: Text(
-                            "Signup",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    );
+              return Container(
+                // padding: EdgeInsets.all(30),
+                child: Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Colors.redAccent,
+                  child: MaterialButton(
+                    height: 0.075*height,
+                      minWidth: 0.84*width,
+                    onPressed: () {
+                      showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          });
+                     changeAuthModeSign();
+                     // print(authMode),
+                      _submitForm(model.authenticate, context);
+                    },
+                    child: Text(
+                      "Signup",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              );
             }),
           ],
         ),
@@ -252,27 +238,19 @@ class _LoginScreen3State extends State<LoginScreen3>
   }
 
   Widget homePage(BuildContext context) {
+     double height=MediaQuery.of(context).size.height;
+     double width=MediaQuery.of(context).size.width;
     return new Container(
-      height: MediaQuery.of(context).size.height,
+
       decoration: BoxDecoration(
         color: Colors.redAccent,
-        image: DecorationImage(
-          colorFilter: new ColorFilter.mode(
-              Colors.black.withOpacity(0.1), BlendMode.dstATop),
-          image: AssetImage('assets/images/mountains.jpg'),
-          fit: BoxFit.cover,
-        ),
       ),
       child: new Column(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.only(top: 200.0),
+            padding: EdgeInsets.only(top: height*0.23),
             child: Center(
-              child: Icon(
-                Icons.headset_mic,
-                color: Colors.white,
-                size: 40.0,
-              ),
+              child: Image.asset("assets/colorlogo.png",height:height*0.14,),
             ),
           ),
           Container(
@@ -281,113 +259,183 @@ class _LoginScreen3State extends State<LoginScreen3>
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  "Awesome",
+                  "Cooky",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20.0,
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold
                   ),
-                ),
-                Text(
-                  "App",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold),
-                ),
+                )
               ],
             ),
           ),
-          new Container(
-            width: MediaQuery.of(context).size.width,
-            margin: const EdgeInsets.only(left: 30.0, right: 30.0, top: 150.0),
-            alignment: Alignment.center,
-            child: new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new OutlineButton(
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0)),
-                    color: Colors.redAccent,
-                    highlightedBorderColor: Colors.white,
-                    onPressed: () => gotoSignup(),
-                    child: new Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 20.0,
-                        horizontal: 20.0,
-                      ),
-                      child: new Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new Expanded(
-                            child: Text(
-                              "SIGN UP",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
+          ScopedModelDescendant<MainModel>(
+              builder: (BuildContext context, Widget child, MainModel model) {
+            return model.isLoading
+                ? Container(
+                    padding: EdgeInsets.only(top:0.14*height),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.white,
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          new Container(
-            width: MediaQuery.of(context).size.width,
-            margin: const EdgeInsets.only(left: 30.0, right: 30.0, top: 30.0),
-            alignment: Alignment.center,
-            child: new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new FlatButton(
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0)),
-                    color: Colors.white,
-                    onPressed: () => gotoLogin(),
-                    child: new Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 20.0,
-                        horizontal: 20.0,
-                      ),
-                      child: new Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new Expanded(
-                            child: Text(
-                              "LOGIN",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold),
+                  )
+                : Column(
+                    children: <Widget>[
+                      Container(
+                        //width: MediaQuery.of(context).size.width,
+                        margin:  EdgeInsets.only(
+                            left: 30.0, right: 30.0, top:height*0.11),
+                        alignment: Alignment.center,
+                        child: new Row(
+                          children: <Widget>[
+                            new Expanded(
+                              child: new FlatButton(
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(25.0)),
+                                color: Colors.white,
+                                //   highlightedBorderColor: Colors.white,
+                                onPressed: (){
+                                  showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      });
+                                  googlesignIn(
+                                      model.signInWithGoogle(), context);
+                                },
+                                child: new Container(
+                                  padding:  EdgeInsets.symmetric(
+                                    vertical: 0.017*height,
+                                    horizontal:0.028*width,
+                                  ),
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      new Expanded(
+                                        flex: 1,
+                                        child: Image.asset(
+                                          "assets/googleicon.png",
+                                          height: 30,
+                                          width: 30,
+                                        ),
+                                      ),
+                                      new Expanded(
+                                        flex: 3,
+                                        child: Text(
+                                          "SIGNIN WITH GOOGLE",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.redAccent,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.only(
+                            left: 30.0, right: 30.0, top: 30.0),
+                        alignment: Alignment.center,
+                        child: new Row(
+                          children: <Widget>[
+                            new Expanded(
+                              child: new OutlineButton(
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(30.0)),
+                                color: Colors.redAccent,
+                                highlightedBorderColor: Colors.white,
+                                onPressed: () => gotoSignup(),
+                                child: new Container(
+                                  padding:  EdgeInsets.symmetric(
+                                    vertical: 0.03*height,
+                                    horizontal: 0.06* width,
+                                  ),
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Expanded(
+                                        child: Text(
+                                          "SIGN UP",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.only(
+                            left: 30.0, right: 30.0, top: 30.0),
+                        alignment: Alignment.center,
+                        child: new Row(
+                          children: <Widget>[
+                            new Expanded(
+                              child: new FlatButton(
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(30.0)),
+                                color: Colors.white,
+                                onPressed: () => gotoLogin(),
+                                child: new Container(
+                                  padding:  EdgeInsets.symmetric(
+                                   vertical: 0.03*height,
+                                    horizontal: 0.06* width,
+                                  ),
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Expanded(
+                                        child: Text(
+                                          "LOGIN",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.redAccent,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+          })
         ],
       ),
     );
   }
 
   Widget loginPage(BuildContext context) {
+     double height=MediaQuery.of(context).size.height;
+     double width=MediaQuery.of(context).size.width;
     return Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           color: Colors.white,
-          image: DecorationImage(
-            colorFilter: new ColorFilter.mode(
-                Colors.black.withOpacity(0.05), BlendMode.dstATop),
-            image: AssetImage('assets/images/mountains.jpg'),
-            fit: BoxFit.cover,
-          ),
         ),
         child: Form(
           key: _formKey,
@@ -395,18 +443,14 @@ class _LoginScreen3State extends State<LoginScreen3>
             children: <Widget>[
               Container(
                 padding: EdgeInsets.only(
-                    left: 100.0, right: 100.0, top: 60, bottom: 50),
+                    left: 100.0, right: 100.0, top: 80, bottom: 50),
                 child: Center(
-                  child: Icon(
-                    Icons.headset_mic,
-                    color: Colors.redAccent,
-                    size: 50.0,
-                  ),
+                  child: Image.asset("assets/halflogo.png",height: 90,),
                 ),
               ),
               Container(
                 padding:
-                    EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
+                    EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 15),
                 child: Column(
                   children: <Widget>[
                     _buildEmailTextField(),
@@ -430,197 +474,71 @@ class _LoginScreen3State extends State<LoginScreen3>
                         ),
                         textAlign: TextAlign.end,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Toast.show(
+                            "This feature will be available soon.Till then please remember your password",
+                            context,
+                            duration: Toast.LENGTH_LONG,
+                            gravity: Toast.BOTTOM);
+                      },
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               ScopedModelDescendant<MainModel>(builder:
                   (BuildContext context, Widget child, MainModel model) {
-                return model.isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : Container(
-                        // padding: EdgeInsets.all(30),
-                        child: Material(
-                          elevation: 5.0,
-                          borderRadius: BorderRadius.circular(30.0),
-                          color: Colors.redAccent,
-                          child: MaterialButton(
-                            height: 50,
-                            minWidth: 300,
-                            onPressed: () => {
-                                  changeAuthModeLog(),
-                                  print(authMode),
-                                  _submitForm(model.authenticate)
-                                },
-                            child: Text(
-                              "Login",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      );
+                return Container(
+                  // padding: EdgeInsets.all(30),
+                  child: Material(
+                    elevation: 5.0,
+                    borderRadius: BorderRadius.circular(30.0),
+                    color: Colors.redAccent,
+                    child: MaterialButton(
+                      height: 0.075*height,
+                      minWidth: 0.84*width,
+                      onPressed: () {
+                        showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            });
+                        changeAuthModeLog();
+                       // print(authMode),
+                        _submitForm(model.authenticate, context);
+                      },
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                );
               }),
-              new Container(
-                width: MediaQuery.of(context).size.width,
-                margin:
-                    const EdgeInsets.only(left: 30.0, right: 30.0, top: 20.0),
-                alignment: Alignment.center,
-                child: Row(
-                  children: <Widget>[
-                    new Expanded(
-                      child: new Container(
-                        margin: EdgeInsets.all(8.0),
-                        decoration:
-                            BoxDecoration(border: Border.all(width: 0.25)),
-                      ),
-                    ),
-                    Text(
-                      "OR CONNECT WITH",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    new Expanded(
-                      child: new Container(
-                        margin: EdgeInsets.all(8.0),
-                        decoration:
-                            BoxDecoration(border: Border.all(width: 0.25)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              new Container(
-                width: MediaQuery.of(context).size.width,
-                margin:
-                    const EdgeInsets.only(left: 30.0, right: 30.0, top: 20.0),
-                child: new Row(
-                  children: <Widget>[
-                    new Expanded(
-                      child: new Container(
-                        margin: EdgeInsets.only(right: 8.0),
-                        alignment: Alignment.center,
-                        child: new Row(
-                          children: <Widget>[
-                            new Expanded(
-                              child: new FlatButton(
-                                shape: new RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(30.0),
-                                ),
-                                color: Color(0Xff3B5998),
-                                onPressed: () => {},
-                                child: new Container(
-                                  child: new Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      new Expanded(
-                                        child: new FlatButton(
-                                          onPressed: () => {},
-                                          padding: EdgeInsets.only(
-                                            top: 20.0,
-                                            bottom: 20.0,
-                                          ),
-                                          child: new Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: <Widget>[
-                                              Icon(
-                                                const IconData(0xea90,
-                                                    fontFamily: 'icomoon'),
-                                                color: Colors.white,
-                                                size: 15.0,
-                                              ),
-                                              Text(
-                                                "FACEBOOK",
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    new Expanded(
-                      child: new Container(
-                        margin: EdgeInsets.only(left: 8.0),
-                        alignment: Alignment.center,
-                        child: new Row(
-                          children: <Widget>[
-                            new Expanded(
-                              child: new FlatButton(
-                                shape: new RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(30.0),
-                                ),
-                                color: Color(0Xffdb3236),
-                                onPressed: () => {},
-                                child: new Container(
-                                  child: new Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      new Expanded(
-                                        child: new FlatButton(
-                                          onPressed: () => {},
-                                          padding: EdgeInsets.only(
-                                            top: 20.0,
-                                            bottom: 20.0,
-                                          ),
-                                          child: new Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: <Widget>[
-                                              Icon(
-                                                const IconData(0xea88,
-                                                    fontFamily: 'icomoon'),
-                                                color: Colors.white,
-                                                size: 15.0,
-                                              ),
-                                              Text(
-                                                "GOOGLE",
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
             ],
           ),
         ));
   }
 
-  changeAuthModeSign() {
+  void googlesignIn(Future<String> googlesignIn, BuildContext context) async {
+    String info = await googlesignIn;
+    print(info.toString());
+    if (info == "Success") {
+      Navigator.of(context).pop();
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      Navigator.of(context).pop();
+      Toast.show("Something went wrong", context);
+    }
+  }
+
+  void changeAuthModeSign() {
     if (authMode == AuthMode.Login) {
       setState(() {
         authMode = AuthMode.Signup;
@@ -628,7 +546,7 @@ class _LoginScreen3State extends State<LoginScreen3>
     }
   }
 
-  changeAuthModeLog() {
+  void changeAuthModeLog() {
     if (authMode == AuthMode.Signup) {
       setState(() {
         authMode = AuthMode.Login;
@@ -636,8 +554,7 @@ class _LoginScreen3State extends State<LoginScreen3>
     }
   }
 
-  gotoLogin() {
-    //controller_0To1.forward(from: 0.0);
+  void gotoLogin() {
     _controller.animateToPage(
       0,
       duration: Duration(milliseconds: 800),
@@ -645,8 +562,7 @@ class _LoginScreen3State extends State<LoginScreen3>
     );
   }
 
-  gotoSignup() {
-    //controller_minus1To0.reverse(from: 0.0);
+  void gotoSignup() {
     _controller.animateToPage(
       2,
       duration: Duration(milliseconds: 800),
@@ -654,106 +570,3 @@ class _LoginScreen3State extends State<LoginScreen3>
     );
   }
 }
-
-// new Row(
-//   children: <Widget>[
-//     new Expanded(
-//       child: new Padding(
-//         padding: const EdgeInsets.only(left: 40.0),
-//         child: new Text(
-//           "EMAIL",
-//           style: TextStyle(
-//             fontWeight: FontWeight.bold,
-//             color: Colors.redAccent,
-//             fontSize: 15.0,
-//           ),
-//         ),
-//       ),
-//     ),
-//   ],
-// ),
-// new Container(
-//   width: MediaQuery.of(context).size.width,
-//   margin: const EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
-//   alignment: Alignment.center,
-//   decoration: BoxDecoration(
-//     border: Border(
-//       bottom: BorderSide(
-//           color: Colors.redAccent,
-//           width: 0.5,
-//           style: BorderStyle.solid),
-//     ),
-//   ),
-//   padding: const EdgeInsets.only(left: 0.0, right: 10.0),
-//   child: new Row(
-//     crossAxisAlignment: CrossAxisAlignment.center,
-//     mainAxisAlignment: MainAxisAlignment.start,
-//     children: <Widget>[
-//       new Expanded(
-//         child: TextField(
-//           obscureText: true,
-//           textAlign: TextAlign.left,
-//           decoration: InputDecoration(
-//             border: InputBorder.none,
-//             hintText: 'samarthagarwal@live.com',
-//             hintStyle: TextStyle(color: Colors.grey),
-//           ),
-//         ),
-//       ),
-//     ],
-//   ),
-// ),
-// Divider(
-//   height: 24.0,
-// ),
-// new Row(
-//   children: <Widget>[
-//     new Expanded(
-//       child: new Padding(
-//         padding: const EdgeInsets.only(left: 40.0),
-//         child: new Text(
-//           "PASSWORD",
-//           style: TextStyle(
-//             fontWeight: FontWeight.bold,
-//             color: Colors.redAccent,
-//             fontSize: 15.0,
-//           ),
-//         ),
-//       ),
-//     ),
-//   ],
-// ),
-// new Container(
-//   width: MediaQuery.of(context).size.width,
-//   margin: const EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
-//   alignment: Alignment.center,
-//   decoration: BoxDecoration(
-//     border: Border(
-//       bottom: BorderSide(
-//           color: Colors.redAccent,
-//           width: 0.5,
-//           style: BorderStyle.solid),
-//     ),
-//   ),
-//   padding: const EdgeInsets.only(left: 0.0, right: 10.0),
-//   child: new Row(
-//     crossAxisAlignment: CrossAxisAlignment.center,
-//     mainAxisAlignment: MainAxisAlignment.start,
-//     children: <Widget>[
-//       new Expanded(
-//         child: TextField(
-//           obscureText: true,
-//           textAlign: TextAlign.left,
-//           decoration: InputDecoration(
-//             border: InputBorder.none,
-//             hintText: '*********',
-//             hintStyle: TextStyle(color: Colors.grey),
-//           ),
-//         ),
-//       ),
-//     ],
-//   ),
-// ),
-// Divider(
-//   height: 24.0,
-// ),

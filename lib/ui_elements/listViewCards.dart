@@ -1,22 +1,37 @@
-import 'package:cooky/ui_elements/detail.dart';
-import 'package:cooky/ui_elements/detailscreen.dart';
+import 'package:cooky/ui_elements/detailrecipe.dart';
+import 'package:cooky/widget/NoNetworkWidget.dart';
+import 'package:cooky/widget/recipecard_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cooky/scoped_models/mainmodel.dart';
 import 'package:cooky/models/recipe.dart';
+import 'package:cooky/models/recipeHalf.dart';
 
-class ListViewCards extends StatelessWidget {
+class ListViewCards extends StatefulWidget {
   final String category;
+  final MainModel model;
+  ListViewCards(this.category, this.model);
 
-  ListViewCards(this.category);
+  ListViewState createState() {
+    return new ListViewState();
+  }
+}
+
+class ListViewState extends State<ListViewCards> {
+  @override
+  void initState() {
+    super.initState();
+    widget.model
+        .checkConnection()
+        .whenComplete(() => widget.model.getrecipebyCategory(widget.category));
+  }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text(category),
+        title: Text(widget.category),
         backgroundColor: Colors.redAccent,
       ),
       body: listCards(context),
@@ -30,93 +45,55 @@ class ListViewCards extends StatelessWidget {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: 4,
-                itemBuilder: (BuildContext context, int index) {
-                  return makeCard(
-                      context, _getCategory(category, model), index);
-                },
-              );
+            : !model.isConnected
+                ? NoNetwork(model)
+                : widget.model.category_wise.length == 0
+                    ? Center(
+                        child: Text(
+                            "No Recipe in this category. We will be adding some soon."),
+                      )
+                    : ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: widget.model.category_wise.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return makeCard(context,
+                               model.recipeHalfList_all, index,model);
+                        },
+                      );
       },
     ));
   }
 
-  Widget makeCard(BuildContext context, List<Recipe> recipe, int index) {
-    return Center(
-        child: Container(
-      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-      child: Card(
-        child: InkWell(
-          splashColor: Colors.blue.withAlpha(30),
-          onTap: () => _openDetailPage(context, recipe[index]),
-          child: Container(
-            width: 300,
-            height: 220,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 160,
-                  width: 300,
-                  child: Image.asset("assets/food.jpg", fit: BoxFit.fitWidth),
-                ),
-                Row(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(recipe[index].title,
-                              style: TextStyle(fontSize: 14.0)),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Text("Vegetarian, Nepali",
-                              style: TextStyle(fontSize: 12.0)),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: 80.0,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.favorite_border),
-                          onPressed: () {},
-                        ),
-                        Text(
-                          recipe[index].favouriteCount.toString(),
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ],
-            ),
+  Widget makeCard(BuildContext context, List<RecipeHalf> recipe, int index,MainModel model) {
+    return SizedBox(
+        height: 220,
+        child: Padding(
+          padding: EdgeInsets.only(top: 10, bottom: 5, left: 20, right: 20),
+          child: InkWell(
+            splashColor: Colors.blue.withAlpha(30),
+            onTap: () => _openDetailPage(context, recipe[index],model),
+            child: RecipeCardMain(recipe[index]),
+            //
           ),
-        ),
-      ),
-    ));
+        ));
   }
 
-  _openDetailPage(BuildContext context, Recipe recipe) {
+  _openDetailPage(BuildContext context, RecipeHalf recipe, MainModel model) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DetailScreen(recipe)));
+        context, MaterialPageRoute(builder: (context) => DetailScreen(recipe,model)));
   }
 
   _getCategory(String category, MainModel model) {
     switch (category) {
       case "New Arrivals":
-        return model.allRecipe;
+        return model.recipes_all;
         break;
       case "Most Popular":
-        return model.mostPopularecipeList;
+        return model.recipes_mostpopular;
         break;
       default:
-       return model.recipeListbyCategory;
+        return model.category_wise;
     }
   }
 }
+

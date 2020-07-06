@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooky/scoped_models/mainmodel.dart';
+import 'package:cooky/ui_elements/Profile.dart';
 import 'package:cooky/ui_elements/category.dart';
 import 'package:cooky/ui_elements/hometab.dart';
 import 'package:cooky/ui_elements/favouritetab.dart';
-import 'package:cooky/ui_elements/sharetab.dart';
-import 'drawer/home_drawer.dart';
-
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,30 +17,49 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   List<Widget> _children = [];
-  List<String> _appBarTitle = ['Home', 'Categories', 'Explore', 'Share'];
-  final DocumentReference docRef =
-      Firestore.instance.collection('India').document('categorycount');
-  final List<int> categorycount = [];
+  List<String> _appBarTitle = ['Home', 'Categories', 'Favourite', 'Settings'];
 
   @override
   void initState() {
-    widget.model.fetchRecipe();
-    _children.add(HomeTab());
-    _children.add(Category());
-    _children.add(DisplayfavouriteTab());
-    _children.add(ShareTab());
+    super.initState();
+
+    widget.model.checkConnection()
+    .whenComplete(() => widget.model.get_preferences()
+        .whenComplete(() => widget.model.fetchRecipeHalf()));
+    // widget.model.fetchRecipe().whenComplete(() => );
+    // widget.model.getrecipebyCategory("Vegetarian");
+    //widget.model.getauthorList();
+   
+    _children.add(HomeTab(widget.model));
+    _children.add(Category(widget.model));
+    _children.add(DisplayfavouriteTab(widget.model));
+    _children.add(Profile(widget.model));
 
     _buildAppBar();
-
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildAppBar(),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-      drawer: HomeDrawer(),
+    return Container(
+        color: Colors.white,
+        child: Scaffold(
+          body: _buildAppBar(),
+          bottomNavigationBar: _buildBottomNavigationBar(),
+          //drawer: HomeDrawer(),
+        ));
+  }
+
+  Widget buildAppBar() {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+          child: appBar(),
+        ),
+        SingleChildScrollView(
+          child: _children[_currentIndex],
+        )
+      ],
     );
   }
 
@@ -80,7 +96,8 @@ class HomePageState extends State<HomePage> {
             icon: Icon(Icons.category), title: Text("Categories")),
         BottomNavigationBarItem(
             icon: Icon(Icons.favorite), title: Text("Favourite")),
-        BottomNavigationBarItem(icon: Icon(Icons.edit), title: Text("Share")),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.settings), title: Text("Settings")),
       ],
       type: BottomNavigationBarType.fixed,
       currentIndex: _currentIndex,
@@ -91,5 +108,50 @@ class HomePageState extends State<HomePage> {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  Widget appBar() {
+    return SizedBox(
+      height: AppBar().preferredSize.height,
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(top: 8, left: 8),
+            child: Container(
+              width: AppBar().preferredSize.height - 8,
+              height: AppBar().preferredSize.height - 8,
+              color: Colors.white,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius:
+                      new BorderRadius.circular(AppBar().preferredSize.height),
+                  child: Icon(
+                    Icons.menu,
+                    color: Colors.redAccent,
+                  ),
+                  onTap: () {},
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  _appBarTitle[_currentIndex],
+                  style: new TextStyle(
+                    fontSize: 22,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
