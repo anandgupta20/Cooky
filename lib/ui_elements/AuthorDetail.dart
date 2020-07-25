@@ -1,6 +1,7 @@
 
 import 'package:cooky/scoped_models/mainmodel.dart';
 import 'package:cooky/widget/NoNetworkWidget.dart';
+import 'package:cooky/widget/hasError.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -44,7 +45,7 @@ class AuthorDetailState extends State<AuthorDetailScreen> {
         ),
         body: ScopedModelDescendant(
             builder: (BuildContext context, Widget child, MainModel model) {
-          return model.isLoading
+          return  model.hasError? HasError(model):  model.isLoading
               ? Center(
                   child: CircularProgressIndicator(),
                 ): !model.isConnected?NoNetwork(model)

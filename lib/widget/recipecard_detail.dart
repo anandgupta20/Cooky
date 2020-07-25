@@ -13,7 +13,7 @@ class RecipeCardDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    double width = size.width;
+    //double width = size.width;
     double height = size.height;
     ScopedModelDescendant<MainModel> _buildFavoriteButton() {
       return ScopedModelDescendant<MainModel>(

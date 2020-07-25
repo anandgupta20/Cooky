@@ -141,8 +141,8 @@ class _LoginScreen3State extends State<LoginScreen3>
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('An Error Occurred!'),
-            content: Text(successInformation['message']),
+            title: Text(successInformation['message']==""?'Thank you! You have registered successfully.':'An Error Occurred!'),
+            content: Text(successInformation['message']==""?"A verification link has been sent to your resistered email id.Please verify through it and then Login.":successInformation['message'] ),
             actions: <Widget>[
               FlatButton(
                 child: Text('Okay'),

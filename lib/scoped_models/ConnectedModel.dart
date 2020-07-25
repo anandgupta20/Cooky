@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooky/models/author.dart';
 import 'package:cooky/models/nutritionInfo.dart';
-import 'package:cooky/models/recipe.dart';
 import 'package:cooky/models/recipeHalf.dart';
 import 'package:cooky/models/recipeFull.dart';
 import 'package:cooky/models/user.dart';
@@ -23,6 +22,10 @@ class ConnectedModel extends Model {
   
   SharedPreferences sf; 
 
+  ////Error///
+  
+  bool hasError;
+
    String cur_preference;
   ////////////////Nutrition Model Things///////////////
    NutritionInfo nutritionObj;
@@ -38,14 +41,7 @@ class ConnectedModel extends Model {
   List<RecipeHalf> recipeHalfList_mostpopular = [];
   List<RecipeHalf> recipeHalfList_byCategory = [];
   //////////////////////////////////////
-  ////Recipe Model things//////
-  String selRecipeId;
-  List<Recipe> recipeList_fav = [];
-  List<Recipe> recipeList_all = [];
-  List<Recipe> categoryList_wise = [];
-  List<Recipe> recipeList_mostpopular = [];
-  List<Recipe> recipeList_byCategory = [];
-  /////////////////////////////////////
+ 
 
   ////Author Model things//////
   Author author;

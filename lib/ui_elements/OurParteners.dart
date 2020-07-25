@@ -1,5 +1,6 @@
 import 'package:cooky/models/author.dart';
 import 'package:cooky/widget/NoNetworkWidget.dart';
+import 'package:cooky/widget/hasError.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -38,7 +39,7 @@ class OurPartenersState extends State<OurParteners> {
   Widget listCards(BuildContext context) {
     return Container(child: ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
-        return model.isLoading
+        return  model.hasError? HasError(model): model.isLoading
             ? Center(
                 child: CircularProgressIndicator(),
               )

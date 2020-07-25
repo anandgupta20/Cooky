@@ -6,7 +6,6 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cooky/scoped_models/mainmodel.dart';
-import 'package:cooky/models/recipe.dart';
 import 'package:cooky/models/recipeHalf.dart';
 
 class DisplayfavouriteTab extends StatefulWidget {

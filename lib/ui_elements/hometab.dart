@@ -1,4 +1,4 @@
-import 'package:cooky/models/recipe.dart';
+
 import 'package:cooky/models/recipeHalf.dart';
 import 'package:cooky/scoped_models/mainmodel.dart';
 import 'package:cooky/ui_elements/listViewCards.dart';
@@ -7,6 +7,7 @@ import 'package:cooky/widget/NoNetworkWidget.dart';
 import 'package:cooky/widget/recipecard_main.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+
 
 class HomeTab extends StatefulWidget {
   final MainModel _model;
@@ -24,10 +25,10 @@ class HomeTabState extends State<HomeTab> {
 
   final List<String> _category = [
     "New Arrivals",
-    "Most Popular",
-    "Vegetarian",
-    "Festival dishes",
-    ""
+    "Less Duration",
+    "Low-Calorie",
+    //"Festival dishes",
+   // ""
   ];
 
   @override
@@ -80,13 +81,13 @@ class HomeTabState extends State<HomeTab> {
               controller: PageController(viewportFraction: 0.9, initialPage: 1),
               itemCount: 4,
               itemBuilder: (BuildContext context, int itemIndex) {
-                return  _buildCarouselItem(context, itemIndex,
-                          model.recipesHalf_all ,  model);
+                // return  _buildCarouselItem(context,itemIndex,
+                //           model.category_wise_Half,model);
                  
                 
                 
-                // _buildCarouselItem(context, itemIndex,
-                //     _getCarousal(_category[carouselIndex], model),model);
+               return _buildCarouselItem(context, itemIndex,
+                    _getCarousal(_category[carouselIndex], model),model);
               },
             );
           }),
@@ -140,13 +141,16 @@ class HomeTabState extends State<HomeTab> {
   _getCarousal(String category, MainModel model) {
     switch (category) {
       case "New Arrivals":
-        return model.recipesHalf_all;
+        return model.recipeHalfList_all;
         break;
-      case "Most Popular":
-        return model.recipes_mostpopular;
+      case "Less Duration":
+        return model.recipeHalfList_all.where((recipeHalf) =>int.parse(recipeHalf.duration)<=40).toList();
         break;
+      case "Low-Calorie":
+        return model.recipeHalfList_all.where((recipeHalf) =>recipeHalf.category=="Low-Calorie").toList();
+      break;
       default:
-        return model.recipes_byCategory;
+        return model.recipeHalfList_all;
     }
   }
 

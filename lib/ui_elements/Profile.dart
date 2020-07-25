@@ -75,7 +75,7 @@ class ProfileState extends State<Profile> {
             leading: Icon(Icons.share),
             title: Text('Share App'),
             onTap: () {
-              Share.share("App Link");
+              Share.share("I discovered this recipe and am sure you’re going to love it: Spinach and Pasta Soup from Cooky https://play.google.com/store/apps/details?id=com.anand.cooky  Eat healthy with Cooky App");
             },
           ),
           Divider(

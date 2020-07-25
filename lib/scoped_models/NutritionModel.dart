@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:cooky/models/nutritionInfo.dart';
 import 'package:http/http.dart' as http;
-import 'package:cooky/models/author.dart';
 import 'ConnectedModel.dart';
 
 class NutritionModel extends ConnectedModel {
@@ -9,11 +8,13 @@ class NutritionModel extends ConnectedModel {
 
    NutritionInfo get get_NutritionbyId {
     return nutritionObj;
-  }
+   }
 
   Future<NutritionInfo> getNutritonrbyId(String id) async {
+    try{
     if (isConnected) {
       isLoading = true;
+      hasError=false;
       notifyListeners();
       var encode = json.encode({
         "structuredQuery": {
@@ -38,7 +39,10 @@ class NutritionModel extends ConnectedModel {
                 'Authorization': 'Bearer ${authenticatedUser.token}'
               },
               body: encode)
-          .catchError((error) => print(error));
+          .catchError((error) {
+            
+         
+        });
        var recipeDocument = json.decode(response.body);
        print(recipeDocument);
 
@@ -51,6 +55,10 @@ class NutritionModel extends ConnectedModel {
       isLoading=false;
        notifyListeners();
 
+    }}catch(error){    
+       hasError = true;
+       isLoading=false;
+       notifyListeners();
     }
     return nutritionObj;
   }

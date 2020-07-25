@@ -65,7 +65,7 @@ class UserModel extends ConnectedModel {
             json.decode(verification_Email.body);
         print(verify_response);
         message =
-            "A email has been sent to your registered E-mail id for verification.";
+            "";
       } else {
         final Map<String, dynamic> id_VerifyData = {
           'idToken': responseData['idToken'],

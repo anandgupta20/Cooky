@@ -1,6 +1,5 @@
 import 'package:cooky/scoped_models/mainmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:cooky/models/recipe.dart';
 import 'package:cooky/models/recipeHalf.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -13,13 +12,9 @@ class RecipeCardMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Size size=MediaQuery.of(context).size;
-            //double width=size.width;
-          //  double height=size.height;
     ScopedModelDescendant<MainModel> _buildFavoriteButton() {
       return ScopedModelDescendant<MainModel>(
           builder: (BuildContext context, Widget child, MainModel model) {
-           
         return RawMaterialButton(
           constraints: const BoxConstraints(minWidth: 38.0, minHeight: 38.0),
           onPressed: () {
@@ -50,10 +45,14 @@ class RecipeCardMain extends StatelessWidget {
       return ScopedModelDescendant<MainModel>(
           builder: (BuildContext context, Widget child, MainModel model) {
         return model.recipeHalfList_all
-                  .firstWhere((RecipeHalf recipe1) => recipe1.id == recipe.id)
-                  .isVeg
-              ? Image.asset("assets/veg.png", height: 30,width: 30,)
-              : Image.asset("assets/non-veg.png", height: 30,width: 30);
+                .firstWhere((RecipeHalf recipe1) => recipe1.id == recipe.id)
+                .isVeg
+            ? Image.asset(
+                "assets/veg.png",
+                height: 30,
+                width: 30,
+              )
+            : Image.asset("assets/non-veg.png", height: 30, width: 30);
       });
     }
 
@@ -67,81 +66,80 @@ class RecipeCardMain extends StatelessWidget {
             // We overlap the image and the button by
             // creating a Stack object:
             Expanded(
-              flex: 5,
-           child: Stack(
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [0, 1.5],
-                        colors: [Colors.white, Colors.black]),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8.0),
-                        topRight: Radius.circular(8.0)),
-                  ),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8.0),
-                          topRight: Radius.circular(8.0)),
-                      child: FadeInImage(
-                        placeholder: AssetImage(""),
-                        image: NetworkImage(recipe.imageUrl),
-                        fit: BoxFit.cover,
-                      )),
-                ),
-                Positioned(
-                  child: _buildFavoriteButton(),
-                  top: 10.0,
-                  right: 10.0,
-                ),
-                Positioned(
-                  child:_buildVegIcon(),
-                  top: 10,
-                  left: 10,
-                ),
-                Positioned(
-                  bottom: 10.0,
-                  right: 10.0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Icons.timer,
-                        color: Colors.white,
+                flex: 5,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            stops: [0, 1.5],
+                            colors: [Colors.white, Colors.black]),
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                            topRight: Radius.circular(8.0)),
                       ),
-                      SizedBox(
-                        width: 5.0,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.0),
+                              topRight: Radius.circular(8.0)),
+                          child: FadeInImage(
+                            placeholder: AssetImage(""),
+                            image: NetworkImage(recipe.imageUrl),
+                            fit: BoxFit.cover,
+                          )),
+                    ),
+                    Positioned(
+                      child: _buildFavoriteButton(),
+                      top: 10.0,
+                      right: 10.0,
+                    ),
+                    Positioned(
+                      child: _buildVegIcon(),
+                      top: 10,
+                      left: 10,
+                    ),
+                    Positioned(
+                      bottom: 10.0,
+                      right: 10.0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.timer,
+                            color: Colors.white,
+                          ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          Text(
+                            recipe.duration + " min",
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
                       ),
-                      Text(
-                         recipe.duration,
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            )),
+                    ),
+                  ],
+                )),
             Expanded(
-              flex: 2,
-              child:
-            Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(8.0),
-                        bottomRight: Radius.circular(8.0))),
-                child: ListTile(
-                  title: Text(
-                    recipe.title,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                )))
+                flex: 2,
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(8.0),
+                            bottomRight: Radius.circular(8.0))),
+                    child: ListTile(
+                      title: Text(
+                        recipe.title,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    )))
           ],
         ),
       ),

@@ -1,11 +1,11 @@
 import 'package:cooky/ui_elements/detailrecipe.dart';
 import 'package:cooky/widget/NoNetworkWidget.dart';
+import 'package:cooky/widget/hasError.dart';
 import 'package:cooky/widget/recipecard_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cooky/scoped_models/mainmodel.dart';
-import 'package:cooky/models/recipe.dart';
 import 'package:cooky/models/recipeHalf.dart';
 
 class ListViewCards extends StatefulWidget {
@@ -34,30 +34,39 @@ class ListViewState extends State<ListViewCards> {
         title: Text(widget.category),
         backgroundColor: Colors.redAccent,
       ),
-      body: listCards(context),
+      body: listCards(context)
     );
   }
 
   Widget listCards(BuildContext context) {
     return Container(child: ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
-        return model.isLoading
+        return model.hasError? HasError(model):model.isLoading
             ? Center(
                 child: CircularProgressIndicator(),
               )
             : !model.isConnected
                 ? NoNetwork(model)
-                : widget.model.category_wise.length == 0
+                :widget.category=="New Arrivals" || widget.category=="Less Duration" ? 
+                 ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: widget.model.recipeHalfList_all.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return makeCard(context,
+                               model.recipeHalfList_all, index,model);
+                        },
+                      )
+                :widget.model.category_wise_Half.length == 0
                     ? Center(
                         child: Text(
                             "No Recipe in this category. We will be adding some soon."),
                       )
                     : ListView.builder(
                         scrollDirection: Axis.vertical,
-                        itemCount: widget.model.category_wise.length,
+                        itemCount: widget.model.category_wise_Half.length,
                         itemBuilder: (BuildContext context, int index) {
                           return makeCard(context,
-                               model.recipeHalfList_all, index,model);
+                               model.category_wise_Half, index,model);
                         },
                       );
       },
@@ -83,17 +92,17 @@ class ListViewState extends State<ListViewCards> {
         context, MaterialPageRoute(builder: (context) => DetailScreen(recipe,model)));
   }
 
-  _getCategory(String category, MainModel model) {
-    switch (category) {
-      case "New Arrivals":
-        return model.recipes_all;
-        break;
-      case "Most Popular":
-        return model.recipes_mostpopular;
-        break;
-      default:
-        return model.category_wise;
-    }
-  }
+  // _getCategory(String category, MainModel model) {
+  //   switch (category) {
+  //     case "New Arrivals":
+  //       return model.recipesHalf_all;
+  //       break;
+  //     case "Most Popular":
+  //       return model.recipesHalf_all;
+  //       break;
+  //     default:
+  //       return model.recipesHalf_all;
+  //   }
+  // }
 }
 

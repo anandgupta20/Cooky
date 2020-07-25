@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:cooky/models/recipe.dart';
 import 'package:cooky/models/recipeHalf.dart';
 import 'package:cooky/scoped_models/mainmodel.dart';
 import 'package:cooky/ui_elements/Youtube_Player.dart';
 import 'package:cooky/widget/NoNetworkWidget.dart';
+import 'package:cooky/widget/hasError.dart';
 import 'package:cooky/widget/recipecard_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -35,10 +35,11 @@ class _DetailPageState extends State<DetailScreen>
   AnimationController controller;
 
   void initState() {
+
+    widget.model.checkConnection().whenComplete(() =>
     widget.model
         .fetchRecipeFull(widget.recipe.referenceId)
-        .whenComplete(() => _startAnimation() );
-
+        .whenComplete(() => _startAnimation()));
     super.initState();
   }
 
@@ -86,7 +87,7 @@ class _DetailPageState extends State<DetailScreen>
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: <Widget>[
-            FlatButton.icon(
+           widget.model.isLoading?Container():widget.model.hasError?Container(): FlatButton.icon(
               icon: Icon(Icons.play_circle_filled, color: Colors.red),
               label: Text("Watch Recipe"),
               onPressed: () {
@@ -99,7 +100,7 @@ class _DetailPageState extends State<DetailScreen>
         ),
         body: ScopedModelDescendant(
             builder: (BuildContext context, Widget child, MainModel model) {
-          return model.get_isLoading
+          return model.hasError? HasError(model): model.get_isLoading
               ? Center(
                   child: CircularProgressIndicator(),
                 )

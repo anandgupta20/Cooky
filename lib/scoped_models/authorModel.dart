@@ -13,7 +13,10 @@ class AuthorModel extends ConnectedModel {
   }
 
   Future<Author> getauthorbyName(String authorName) async {
+
+    try{
     isLoading = true;
+    hasError=false;
     notifyListeners();
     http.Response response = await http.post(
       'https://firestore.googleapis.com/v1/projects/cooky-e12a6/databases/(default)/documents:runQuery?key=AIzaSyARDt_hJ8_47_OEV0Ef4DqKuK7-A8rDgJ4/projects/cooky-e12a6/databases/(default)/documents/India:runQuery?key=AIzaSyARDt_hJ8_47_OEV0Ef4DqKuK7-A8rDgJ4',
@@ -43,10 +46,22 @@ class AuthorModel extends ConnectedModel {
     author = authorbyName;
     isLoading = false;
     notifyListeners();
+    
+    }catch(error){
+       hasError=true;
+       isLoading=false;
+       notifyListeners();  
+    }
     return author;
   }
 
+
+
+
+
   Future<void> getauthorList() async {
+
+    try{
     isLoading = true;
     notifyListeners();
     http.Response response = await http.post(
@@ -76,5 +91,10 @@ class AuthorModel extends ConnectedModel {
 
     isLoading = false;
     notifyListeners();
+    }catch(error){
+       hasError = true;
+       isLoading=false;
+       notifyListeners();
+    }
   }
 }

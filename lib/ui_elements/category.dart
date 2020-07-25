@@ -8,8 +8,8 @@ import 'package:scoped_model/scoped_model.dart';
 
 
 class Category extends StatefulWidget {
-   final MainModel _model;
-   Category(this._model);
+   final MainModel model;
+   Category(this.model);
  CategoryState createState() => new CategoryState();
 }
 
@@ -27,7 +27,7 @@ class CategoryState extends State<Category>{
     GestureDetector items(String itemname, BuildContext context,MainModel model) {
     return GestureDetector(
       onTap: () {
-        _openListViewCardPage(context,"Vegetarian",model);
+        _openListViewCardPage(context,itemname,model);
       },
       child: Categoryitem(itemname),
     );
@@ -83,12 +83,13 @@ class CategoryState extends State<Category>{
       mainAxisSpacing: 8,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       children: <Widget>[
-        items("Starter", context,model),
-        items("Vegan", context,model),
+        items("Low-Calorie", context,model),
         items("Breakfast", context,model),
+        items("Lunch", context,model),
+        items("Vegan", context,model),
         items("Juices", context,model),
         items("Dessert", context,model),
-        items("Snack", context,model),
+        items("Dinner", context,model),
       ],
       staggeredTiles: [
         StaggeredTile.extent(1, 100),
